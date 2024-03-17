@@ -1,3 +1,9 @@
 ﻿  freeglut-tentativa3.cpp
-E:\0. FACULDADE\7 Período\Computação Gráfica\M1\Códigos\projects\freeglut-cubo3d\freeglut-tentativa3.cpp(76,19): warning C4244: 'inicializando': conversão de 'double' para 'GLfloat', possível perda de dados
+E:\0. FACULDADE\7 Período\Computação Gráfica\M1\Códigos\projects\freeglut-cubo3d\freeglut-tentativa3.cpp(157,18): warning C4305: 'argumento': truncamento de 'double' para 'GLfloat'
+E:\0. FACULDADE\7 Período\Computação Gráfica\M1\Códigos\projects\freeglut-cubo3d\freeglut-tentativa3.cpp(161,17): warning C4305: 'argumento': truncamento de 'double' para 'GLfloat'
+E:\0. FACULDADE\7 Período\Computação Gráfica\M1\Códigos\projects\freeglut-cubo3d\freeglut-tentativa3.cpp(165,23): warning C4305: 'argumento': truncamento de 'double' para 'GLfloat'
+E:\0. FACULDADE\7 Período\Computação Gráfica\M1\Códigos\projects\freeglut-cubo3d\freeglut-tentativa3.cpp(169,22): warning C4305: 'argumento': truncamento de 'double' para 'GLfloat'
+E:\0. FACULDADE\7 Período\Computação Gráfica\M1\Códigos\projects\freeglut-cubo3d\freeglut-tentativa3.cpp(173,13): warning C4305: 'argumento': truncamento de 'double' para 'GLfloat'
+E:\0. FACULDADE\7 Período\Computação Gráfica\M1\Códigos\projects\freeglut-cubo3d\freeglut-tentativa3.cpp(177,13): warning C4305: 'argumento': truncamento de 'double' para 'GLfloat'
+E:\0. FACULDADE\7 Período\Computação Gráfica\M1\Códigos\projects\freeglut-cubo3d\freeglut-tentativa3.cpp(186,19): warning C4244: 'inicializando': conversão de 'double' para 'GLfloat', possível perda de dados
   freeglut-tentativa3.vcxproj -> E:\0. FACULDADE\7 Período\Computação Gráfica\M1\Códigos\projects\freeglut-cubo3d\x64\Debug\freeglut-tentativa3.exe
