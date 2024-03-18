@@ -11,7 +11,7 @@ GLfloat vertices[8][3] = { // matriz com a posição X, Y e Z de cada vértice d
 
 GLfloat altVertices[8][3]; // matriz que recebe a alteração dos vértices para escalar, rotacionar, e deslocar o cubo
 
-GLfloat degrees = 0; // graus de rotação
+GLfloat xDegrees = 0, yDegrees = 0, zDegrees = 0; // graus de rotação
 
 bool xAxisActivated = false; // liga/desliga a rotação do eixo X
 bool yAxisActivated = false; // liga/desliga a rotação do eixo Y
@@ -56,12 +56,6 @@ void myInit() {
 	glEnable(GL_DEPTH_TEST); // permite renderização 3d
 }
 
-void spinWithMatrices() { // função que incrementa os graus de rotação do cubo e chama o display (renderização) novamente
-	degrees = degrees + 1;
-	if (degrees > 360) degrees = 0;
-	glutPostRedisplay();
-}
-
 void copyMatrix(GLfloat source[8][3], GLfloat(&destination)[8][3]) {
 	for (int i = 0; i < 8; ++i) {
 		for (int j = 0; j < 3; ++j) {
@@ -69,8 +63,6 @@ void copyMatrix(GLfloat source[8][3], GLfloat(&destination)[8][3]) {
 		}
 	}
 }
-
-
 
 void xAxisRotation(bool activated, GLfloat(&vertices)[8][3], GLfloat(&altVertices)[8][3], GLfloat radiance) {
 	if (activated) {
@@ -103,10 +95,30 @@ void zAxisRotation(bool activated, GLfloat(&vertices)[8][3], GLfloat(&altVertice
 	}
 }
 
-void allAxisRotation(bool xActivated, bool yActivated, bool zActivated, GLfloat (&vertices)[8][3], GLfloat(&altVertices)[8][3], GLfloat radiance) {
-	xAxisRotation(xActivated, vertices, altVertices, radiance); // rotaciona o eixo X se ativado
-	yAxisRotation(yActivated, vertices, altVertices, radiance); // rotaciona o eixo Y se ativado
-	zAxisRotation(zActivated, vertices, altVertices, radiance); // rotaciona o eixo Z se ativado
+void allAxisRotation(bool xActivated, bool yActivated, bool zActivated, GLfloat (&vertices)[8][3], GLfloat(&altVertices)[8][3]) {
+	GLfloat tempVertices[8][3];
+	GLfloat xRadiance = xDegrees * 3.14 / 180;
+	GLfloat yRadiance = yDegrees * 3.14 / 180;
+	GLfloat zRadiance = zDegrees * 3.14 / 180;
+	xAxisRotation(xActivated, vertices, altVertices, xRadiance); // rotaciona o eixo X se ativado
+	copyMatrix(altVertices, tempVertices);
+	yAxisRotation(yActivated, tempVertices, altVertices, yRadiance); // rotaciona o eixo Y se ativado
+	copyMatrix(altVertices, tempVertices);
+	zAxisRotation(zActivated, tempVertices, altVertices, zRadiance); // rotaciona o eixo Z se ativado
+}
+
+void update(int value) {
+	if (xAxisActivated) {
+		xDegrees += 1;
+	}
+	if (yAxisActivated) {
+		yDegrees += 1;
+	}
+	if (zAxisActivated) {
+		zDegrees += 1;
+	}
+	glutPostRedisplay(); // Marca a janela para redesenhar
+	glutTimerFunc(16, update, 0);
 }
 
 void translateCube(GLfloat x, GLfloat y, GLfloat z) { // desloca o cubo
@@ -133,24 +145,18 @@ void keyboardControl(unsigned char key, int x, int y) {
 		break;
 	case 'x':
 	case 'X':
-		cout << xAxisActivated;
+		if (xAxisActivated) xDegrees = 0;
 		xAxisActivated = !xAxisActivated;
-		yAxisActivated = false;
-		zAxisActivated = false;
 		break;
 	case 'y':
 	case 'Y':
-		cout << yAxisActivated;
+		if (yAxisActivated) yDegrees = 0;
 		yAxisActivated = !yAxisActivated;
-		xAxisActivated = false;
-		zAxisActivated = false;
 		break;
 	case 'z':
 	case 'Z':
-		cout << zAxisActivated;
+		if (zAxisActivated) zDegrees = 0;
 		zAxisActivated = !zAxisActivated;
-		yAxisActivated = false;
-		xAxisActivated = false;
 		break;
 	case 'a':
 	case 'A':
@@ -183,11 +189,11 @@ void display() {
 
 	copyMatrix(vertices, altVertices);
 
-	GLfloat radiance = degrees * 3.14 / 180; // converte os graus para radianos
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glLoadIdentity();
 	
-	allAxisRotation(xAxisActivated, yAxisActivated, zAxisActivated, vertices, altVertices, radiance);
+	allAxisRotation(xAxisActivated, yAxisActivated, zAxisActivated, vertices, altVertices);
 
 	cubeWireframe(altVertices);
 
@@ -203,13 +209,14 @@ int main(int argc, char** argv)
 
 	glutInit(&argc, argv);
 	glutInitWindowSize(600, 600);
-	glutInitWindowPosition(150, 150);
+	glutInitWindowPosition(50, 50);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutCreateWindow("Cubo 3D");
 	myInit();
 	glutKeyboardFunc(keyboardControl);
 	glutDisplayFunc(display);
-	glutIdleFunc(spinWithMatrices);
+	glutTimerFunc(16, update, 0);
+
 	glutMainLoop();
 
 	return 0;
