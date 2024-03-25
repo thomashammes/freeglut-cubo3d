@@ -11,7 +11,8 @@ GLfloat vertices[8][3] = { // matriz com a posição X, Y e Z de cada vértice d
 
 GLfloat altVertices[8][3]; // matriz que recebe a alteração dos vértices para escalar, rotacionar, e deslocar o cubo
 
-GLfloat xDegrees = 0, yDegrees = 0, zDegrees = 0; // graus de rotação
+int xDegrees = 0, yDegrees = 0, zDegrees = 0; // graus de rotação
+int modDegree = 360;
 
 bool xAxisActivated = false; // liga/desliga a rotação do eixo X
 bool yAxisActivated = false; // liga/desliga a rotação do eixo Y
@@ -19,7 +20,7 @@ bool zAxisActivated = false; // liga/desliga a rotação do eixo Z
 
 
 void edge(GLfloat vA[], GLfloat vB[]) { // função que cria uma aresta
-	glColor3f(1.0, 0.0, 0.0);
+	glColor3f(0.0, 1.0, 0.0);
 
 	glBegin(GL_LINES);
 		glVertex3fv(vA);
@@ -54,6 +55,7 @@ void cubeWireframe(GLfloat cubeVerticesMatrix[][3]) { // funcção que cada ares
 void myInit() {
 	glClearColor(0, 0, 0, 1); // define a cor do fundo
 	glEnable(GL_DEPTH_TEST); // permite renderização 3d
+	glLineWidth(3);
 }
 
 void copyMatrix(GLfloat source[8][3], GLfloat(&destination)[8][3]) {
@@ -65,7 +67,7 @@ void copyMatrix(GLfloat source[8][3], GLfloat(&destination)[8][3]) {
 }
 
 void xAxisRotation(bool activated, GLfloat(&vertices)[8][3], GLfloat(&altVertices)[8][3], GLfloat radiance) {
-	if (activated) {
+	if (activated || (!activated && xDegrees > 0)) {
 		for (int i = 0; i < 8; i++) {
 			altVertices[i][0] = vertices[i][0];
 			altVertices[i][1] = vertices[i][1] * cos(radiance) - vertices[i][2] * sin(radiance);
@@ -75,7 +77,7 @@ void xAxisRotation(bool activated, GLfloat(&vertices)[8][3], GLfloat(&altVertice
 }
 
 void yAxisRotation(bool activated, GLfloat (&vertices)[8][3], GLfloat(&altVertices)[8][3], GLfloat radiance) {
-	if (activated) {
+	if (activated || (!activated && yDegrees > 0)) {
 		for (int i = 0; i < 8; i++) {
 			altVertices[i][0] = vertices[i][2] * sin(radiance) + vertices[i][0] * cos(radiance);
 			altVertices[i][1] = vertices[i][1];
@@ -85,8 +87,7 @@ void yAxisRotation(bool activated, GLfloat (&vertices)[8][3], GLfloat(&altVertic
 }
 
 void zAxisRotation(bool activated, GLfloat(&vertices)[8][3], GLfloat(&altVertices)[8][3], GLfloat radiance) {
-
-	if (activated) {
+	if (activated || (!activated && zDegrees > 0)) {
 		for (int i = 0; i < 8; i++) {
 			altVertices[i][0] = vertices[i][0] * cos(radiance) - vertices[i][1] * sin(radiance);
 			altVertices[i][1] = vertices[i][0] * sin(radiance) + vertices[i][1] * cos(radiance);
@@ -110,12 +111,32 @@ void allAxisRotation(bool xActivated, bool yActivated, bool zActivated, GLfloat 
 void update(int value) {
 	if (xAxisActivated) {
 		xDegrees += 1;
+	} else if (!xAxisActivated && xDegrees > 0) {
+		if (xDegrees >= modDegree) {
+			xDegrees = xDegrees % modDegree;
+		}
+		xDegrees -= 1;
 	}
+
 	if (yAxisActivated) {
+		if (yDegrees >= 360) {
+			yDegrees = 0;
+		}
 		yDegrees += 1;
+	} else if (!yAxisActivated && yDegrees > 0) {
+		if (yDegrees >= modDegree) {
+			yDegrees = yDegrees % modDegree;
+		}
+		yDegrees -= 1;
 	}
+
 	if (zAxisActivated) {
 		zDegrees += 1;
+	} else if (!zAxisActivated && zDegrees > 0) {
+		if (zDegrees >= modDegree) {
+			zDegrees = zDegrees % modDegree;
+		}
+		zDegrees -= 1;
 	}
 	glutPostRedisplay(); // Marca a janela para redesenhar
 	glutTimerFunc(16, update, 0);
@@ -145,17 +166,17 @@ void keyboardControl(unsigned char key, int x, int y) {
 		break;
 	case 'x':
 	case 'X':
-		if (xAxisActivated) xDegrees = 0;
+		//if (xAxisActivated) xDegrees = 0;
 		xAxisActivated = !xAxisActivated;
 		break;
 	case 'y':
 	case 'Y':
-		if (yAxisActivated) yDegrees = 0;
+		//if (yAxisActivated) yDegrees = 0;
 		yAxisActivated = !yAxisActivated;
 		break;
 	case 'z':
 	case 'Z':
-		if (zAxisActivated) zDegrees = 0;
+		//if (zAxisActivated) zDegrees = 0;
 		zAxisActivated = !zAxisActivated;
 		break;
 	case 'a':
@@ -202,13 +223,13 @@ void display() {
 
 int main(int argc, char** argv)
 {
-	cout << "X --> Rotacao eixo X\nY --> Rotacao eixo Y\nZ --> Rotacao eixo Z -->\n";
+	cout << "X --> Rotacao eixo X\nY --> Rotacao eixo Y\nZ --> Rotacao eixo Z\n";
 	cout << "A --> Deslocar para Esquerda\nD --> Deslocar para Direita\n";
 	cout << "S --> Deslocar para Baixo\nW --> Deslocar para Cima\n";
 	cout << "R --> Aumentar Escala\nF --> Reduzir Escala\n";
 
 	glutInit(&argc, argv);
-	glutInitWindowSize(600, 600);
+	glutInitWindowSize(500, 500);
 	glutInitWindowPosition(50, 50);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutCreateWindow("Cubo 3D");
